@@ -4,34 +4,99 @@
 #include <unity.h>
 #include "unity_config.h"
 
+#include "FreeRTOS.h"
+#include "task.h"
+#include "semphr.h"
+
+#include "helper.h"
+
+TaskHandle_t low_thread = NULL;
+TaskHandle_t mid_thread = NULL;
+TaskHandle_t high_thread = NULL;
+SemaphoreHandle_t semaphore = NULL;
+
 void setUp(void) {}
 
-void tearDown(void) {}
-
-void test_variable_assignment()
+void tearDown(void)
 {
-    int x = 1;
-    TEST_ASSERT_TRUE_MESSAGE(x == 1,"Variable assignment failed.");
+    stop_thread(&low_thread);
+    stop_thread(&mid_thread);
+    stop_thread(&high_thread);
+    if (semaphore != NULL) {
+        vSemaphoreDelete(semaphore);
+        semaphore = NULL;
+    }
 }
 
-void test_multiplication(void)
+// Activity 0: priority inversion with xSemaphoreCreateBinary.
+// Low takes the semaphore first, high starts delayed and blocks on it,
+// mid has no interest in the semaphore.
+void test_inversion_binary(void)
 {
-    int x = 30;
-    int y = 6;
-    int z = x / y;
-    TEST_ASSERT_TRUE_MESSAGE(z == 5, "Multiplication of two integers returned incorrect value.");
+    TEST_IGNORE_MESSAGE("TODO");
+}
+
+// Activity 1: same thing but with xSemaphoreCreateMutex.
+void test_inversion_mutex(void)
+{
+    TEST_IGNORE_MESSAGE("TODO");
+}
+
+// Activity 2: same priority.
+void test_same_pri_busy_busy(void)
+{
+    TEST_IGNORE_MESSAGE("TODO");
+}
+
+void test_same_pri_yield_yield(void)
+{
+    TEST_IGNORE_MESSAGE("TODO");
+}
+
+void test_same_pri_busy_yield(void)
+{
+    TEST_IGNORE_MESSAGE("TODO");
+}
+
+// Activity 2: different priority.
+void test_diff_pri_busy_busy_high_first(void)
+{
+    TEST_IGNORE_MESSAGE("TODO");
+}
+
+void test_diff_pri_busy_busy_low_first(void)
+{
+    TEST_IGNORE_MESSAGE("TODO");
+}
+
+void test_diff_pri_yield_yield(void)
+{
+    TEST_IGNORE_MESSAGE("TODO");
+}
+
+void supervisor_task(__unused void *params)
+{
+    while (1) {
+        vTaskDelay(pdMS_TO_TICKS(5000)); // Give time for TTY to attach.
+        printf("Start tests\n");
+        UNITY_BEGIN();
+        RUN_TEST(test_inversion_binary);
+        RUN_TEST(test_inversion_mutex);
+        RUN_TEST(test_same_pri_busy_busy);
+        RUN_TEST(test_same_pri_yield_yield);
+        RUN_TEST(test_same_pri_busy_yield);
+        RUN_TEST(test_diff_pri_busy_busy_high_first);
+        RUN_TEST(test_diff_pri_busy_busy_low_first);
+        RUN_TEST(test_diff_pri_yield_yield);
+        UNITY_END();
+    }
 }
 
 int main (void)
 {
     stdio_init_all();
-    while (1) {
-        sleep_ms(5000); // Give time for TTY to attach.
-        printf("Start tests\n");
-        UNITY_BEGIN();
-        RUN_TEST(test_variable_assignment);
-        RUN_TEST(test_multiplication);
-        sleep_ms(5000);
-        UNITY_END();
-    }
+    xTaskCreate(supervisor_task, "Supervisor",
+                THREAD_STACK_SIZE, NULL, SUPERVISOR_PRIORITY, NULL);
+    vTaskStartScheduler();
+    return 0;
 }
