@@ -33,7 +33,9 @@ void tearDown(void)
 // mid has no interest in the semaphore.
 void test_inversion_binary(void)
 {
-    TEST_IGNORE_MESSAGE("TODO");
+    xSemaphoreCreateBinary();
+
+    xSemaphoreGive(semaphore); // Make it available for low priority task.
 }
 
 // Activity 1: same thing but with xSemaphoreCreateMutex.

@@ -10,6 +10,13 @@
 
 SemaphoreHandle_t semaphore;
 
+#define MAIN_TASK_PRIORITY (tskIDLE_PRIORITY + 4UL)
+#define HIGH_PRIORITY_TASK_PRIORITY (tskIDLE_PRIORITY + 3UL)
+#define MEDIUM_PRIORITY_TASK_PRIORITY (tskIDLE_PRIORITY + 2UL)
+#define LOW_PRIORITY_TASK_PRIORITY (tskIDLE_PRIORITY + 1UL)
+#define MAIN_TASK_STACK_SIZE configMINIMAL_STACK_SIZE
+#define PRIORITY_TASK_STACK_SIZE configMINIMAL_STACK_SIZE
+
 void low_priority(__unused void *params) {
   if (xSemaphoreTake(semaphore, (TickType_t)10) == pdTRUE) {
     printf("low priority function got the sem");
@@ -24,9 +31,19 @@ void low_priority(__unused void *params) {
   }
 }
 
-void medium_priority(__unused void *params) {}
+void medium_priority(__unused void *params) 
+{
+    printf("Medium priority task attempting to starve system.\n");
+    while (1)
+    {
 
-void high_priority(__unused void *params) { vTaskDelay(1000); }
+    }
+}
+
+void high_priority(__unused void *params) 
+{ 
+    vTaskDelay(1000); 
+}
 
 void supervisor_task(__unused void *params) {
   hard_assert(cyw43_arch_init() == PICO_OK);
@@ -51,6 +68,9 @@ void main(void) {
 
   stdio_init_all();
   TaskHandle_t task;
+
+  xTaskCreate(supervisor_task, "Supervisor_thread",
+              MAIN_TASK_STACK_SIZE, NULL, MAIN_TASK_PRIORITY, &task);
 
   vTaskStartScheduler();
   return 0;
