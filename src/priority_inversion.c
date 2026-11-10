@@ -49,24 +49,29 @@ void supervisor_task(__unused void *params) {
   hard_assert(cyw43_arch_init() == PICO_OK);
 
   xTaskCreate(low_priority, "LowPriorityTask", PRIORITY_TASK_STACK_SIZE, NULL,
-              LOW_PRIORITY_TASK_PRIORITY, &task);
+              LOW_PRIORITY_TASK_PRIORITY, NULL);
+
+  vTaskDelay(100);
 
   xTaskCreate(medium_priority, "MediumPriorityTask", PRIORITY_TASK_STACK_SIZE,
-              NULL, MEDIUM_PRIORITY_TASK_PRIORITY, &task);
+              NULL, MEDIUM_PRIORITY_TASK_PRIORITY, NULL);
 
   xTaskCreate(high_priority, "HighPriorityTask", PRIORITY_TASK_STACK_SIZE, NULL,
-              HIGH_PRIORITY_TASK_PRIORITY, &task);
+              HIGH_PRIORITY_TASK_PRIORITY, NULL);
 
   while (true) {
     taskYIELD();
   }
 }
 
-void main(void) {
-
-  semaphore = xSemaphoreCreateBinary();
+int main(void) {
 
   stdio_init_all();
+  sleep_ms(5000); // Give time for screen to work
+
+  semaphore = xSemaphoreCreateBinary();
+  xSemaphoreGive(semaphore);
+
   TaskHandle_t task;
 
   xTaskCreate(supervisor_task, "Supervisor_thread",
