@@ -18,13 +18,13 @@ SemaphoreHandle_t semaphore = NULL;
 int32_t first = 0;
 int32_t second = 0;
 
-void run_pair(TaskFunction_t first, UBaseType_t first_pri,
-              TaskFunction_t second, UBaseType_t second_pri,
+void run_pair(TaskFunction_t _first, UBaseType_t first_pri,
+              TaskFunction_t _second, UBaseType_t second_pri,
               TickType_t stagger)
 {
-    high_thread = start_thread(first, "first", first_pri, NULL);
+    high_thread = start_thread(_first, "first", first_pri, NULL);
     vTaskDelay(stagger);
-    low_thread = start_thread(second, "second", second_pri, NULL);
+    low_thread = start_thread(_second, "second", second_pri, NULL);
     vTaskDelay(pdMS_TO_TICKS(1000));
 
     first = (int32_t)thread_runtime(high_thread);
@@ -60,16 +60,18 @@ void test_same_pri_yield_yield(void)
 void test_same_pri_busy_yield(void)
 {
     run_pair(busy_busy, LOW_PRIORITY, busy_yield, LOW_PRIORITY, 0);
-    TEST_ASSERT_INT_WITHIN(100000, 500000, first);
-    TEST_ASSERT_INT_WITHIN(100000, 500000, second);
+    TEST_ASSERT_GREATER_THAN_INT(900000, first);
+    TEST_ASSERT_LESS_THAN_INT(100000, second);
+
 }
 
 // Activity 2: different priority.
 void test_diff_pri_busy_busy_high_first(void)
 {
     run_pair(busy_busy, HIGH_PRIORITY, busy_busy, LOW_PRIORITY, pdMS_TO_TICKS(100));
-    TEST_ASSERT_INT_WITHIN(10000, 100000, first);
-    TEST_ASSERT_GREATER_THAN_INT(900000, second);
+    TEST_ASSERT_GREATER_THAN_INT(900000, first);
+    TEST_ASSERT_LESS_THAN_INT(1000, second);
+
 }
 
 void test_diff_pri_busy_busy_low_first(void)
