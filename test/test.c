@@ -15,6 +15,23 @@ TaskHandle_t mid_thread = NULL;
 TaskHandle_t high_thread = NULL;
 SemaphoreHandle_t semaphore = NULL;
 
+int32_t first = 0;
+int32_t second = 0;
+
+void run_pair(TaskFunction_t first, UBaseType_t first_pri,
+              TaskFunction_t second, UBaseType_t second_pri,
+              TickType_t stagger)
+{
+    high_thread = start_thread(first, "first", first_pri, NULL);
+    vTaskDelay(stagger);
+    low_thread = start_thread(second, "second", second_pri, NULL);
+    vTaskDelay(pdMS_TO_TICKS(1000));
+
+    first = (int32_t)thread_runtime(high_thread);
+    second = (int32_t)thread_runtime(low_thread);
+    printf("first %ld us, second %ld us\n", (long)first, (long)second);
+}
+
 void setUp(void) {}
 
 void tearDown(void)

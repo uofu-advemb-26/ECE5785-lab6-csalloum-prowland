@@ -8,6 +8,10 @@
 #define SUPERVISOR_PRIORITY     ( tskIDLE_PRIORITY + 10UL )
 #define THREAD_STACK_SIZE       configMINIMAL_STACK_SIZE
 
+#define LOW_PRIORITY            ( tskIDLE_PRIORITY + 1UL )
+#define HIGH_PRIORITY           ( tskIDLE_PRIORITY + 2UL )
+
+
 TaskHandle_t start_thread(TaskFunction_t entry, const char *name,
                           UBaseType_t priority, void *params);
 
