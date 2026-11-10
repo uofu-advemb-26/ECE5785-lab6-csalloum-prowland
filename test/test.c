@@ -22,27 +22,8 @@ void tearDown(void)
     stop_thread(&low_thread);
     stop_thread(&mid_thread);
     stop_thread(&high_thread);
-    if (semaphore != NULL) {
-        vSemaphoreDelete(semaphore);
-        semaphore = NULL;
-    }
 }
 
-// Activity 0: priority inversion with xSemaphoreCreateBinary.
-// Low takes the semaphore first, high starts delayed and blocks on it,
-// mid has no interest in the semaphore.
-void test_inversion_binary(void)
-{
-    semaphore = xSemaphoreCreateBinary();
-
-    xSemaphoreGive(semaphore); // Make it available for low priority task.
-}
-
-// Activity 1: same thing but with xSemaphoreCreateMutex.
-void test_inversion_mutex(void)
-{
-    TEST_IGNORE_MESSAGE("TODO");
-}
 
 // Activity 2: same priority.
 void test_same_pri_busy_busy(void)
@@ -82,8 +63,6 @@ void supervisor_task(__unused void *params)
         vTaskDelay(pdMS_TO_TICKS(5000)); // Give time for TTY to attach.
         printf("Start tests\n");
         UNITY_BEGIN();
-        RUN_TEST(test_inversion_binary);
-        RUN_TEST(test_inversion_mutex);
         RUN_TEST(test_same_pri_busy_busy);
         RUN_TEST(test_same_pri_yield_yield);
         RUN_TEST(test_same_pri_busy_yield);

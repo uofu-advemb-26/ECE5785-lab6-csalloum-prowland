@@ -31,6 +31,7 @@ endif()
 
 # Another pico macro which generates the uf2 file in addition to the elf
 pico_add_extra_outputs(hello_freertos)
+pico_add_extra_outputs(inversion)
 
 find_program(OPENOCD openocd)
 find_program(PICOTOOL picotool)

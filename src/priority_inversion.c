@@ -58,7 +58,6 @@ void high_priority(__unused void *params)
 }
 
 void supervisor_task(__unused void *params) {
-  hard_assert(cyw43_arch_init() == PICO_OK);
 
   xTaskCreate(low_priority, "LowPriorityTask", PRIORITY_TASK_STACK_SIZE, NULL,
               LOW_PRIORITY_TASK_PRIORITY, NULL);
@@ -82,7 +81,7 @@ int main(void) {
   sleep_ms(5000); // Give time for screen to work
 
   semaphore = xSemaphoreCreateMutex();
-  xSemaphoreGive(semaphore);
+  //xSemaphoreGive(semaphore);// mutex starts available
 
   TaskHandle_t task;
 
