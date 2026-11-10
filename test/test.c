@@ -45,33 +45,45 @@ void tearDown(void)
 // Activity 2: same priority.
 void test_same_pri_busy_busy(void)
 {
-    TEST_IGNORE_MESSAGE("TODO");
+    run_pair(busy_busy, LOW_PRIORITY, busy_busy, LOW_PRIORITY, 0);
+    TEST_ASSERT_INT_WITHIN(100000, 500000, first);
+    TEST_ASSERT_INT_WITHIN(100000, 500000, second);
 }
 
 void test_same_pri_yield_yield(void)
 {
-    TEST_IGNORE_MESSAGE("TODO");
+    run_pair(busy_yield, LOW_PRIORITY, busy_yield, LOW_PRIORITY, 0);
+    TEST_ASSERT_INT_WITHIN(100000, 500000, first);
+    TEST_ASSERT_INT_WITHIN(100000, 500000, second);
 }
 
 void test_same_pri_busy_yield(void)
 {
-    TEST_IGNORE_MESSAGE("TODO");
+    run_pair(busy_busy, LOW_PRIORITY, busy_yield, LOW_PRIORITY, 0);
+    TEST_ASSERT_INT_WITHIN(100000, 500000, first);
+    TEST_ASSERT_INT_WITHIN(100000, 500000, second);
 }
 
 // Activity 2: different priority.
 void test_diff_pri_busy_busy_high_first(void)
 {
-    TEST_IGNORE_MESSAGE("TODO");
+    run_pair(busy_busy, HIGH_PRIORITY, busy_busy, LOW_PRIORITY, pdMS_TO_TICKS(100));
+    TEST_ASSERT_INT_WITHIN(10000, 100000, first);
+    TEST_ASSERT_GREATER_THAN_INT(900000, second);
 }
 
 void test_diff_pri_busy_busy_low_first(void)
 {
-    TEST_IGNORE_MESSAGE("TODO");
+    run_pair(busy_busy, LOW_PRIORITY, busy_busy, HIGH_PRIORITY, pdMS_TO_TICKS(100));
+    TEST_ASSERT_INT_WITHIN(10000, 100000, first);
+    TEST_ASSERT_GREATER_THAN_INT(900000, second);
 }
 
 void test_diff_pri_yield_yield(void)
 {
-    TEST_IGNORE_MESSAGE("TODO");
+    run_pair(busy_yield, LOW_PRIORITY, busy_yield, HIGH_PRIORITY, pdMS_TO_TICKS(100));
+    TEST_ASSERT_INT_WITHIN(10000, 100000, first);
+    TEST_ASSERT_GREATER_THAN_INT(900000, second);
 }
 
 void supervisor_task(__unused void *params)
