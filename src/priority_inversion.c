@@ -81,7 +81,7 @@ int main(void) {
   stdio_init_all();
   sleep_ms(5000); // Give time for screen to work
 
-  semaphore = xSemaphoreCreateBinary();
+  semaphore = xSemaphoreCreateMutex();
   xSemaphoreGive(semaphore);
 
   TaskHandle_t task;
