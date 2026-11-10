@@ -42,7 +42,19 @@ void medium_priority(__unused void *params)
 
 void high_priority(__unused void *params) 
 { 
-    vTaskDelay(1000); 
+    vTaskDelay(500);
+
+    if (xSemaphoreTake(semaphore, 5000) == pdTRUE) {
+        printf("high priority function got the sem");
+        xSemaphoreGive(semaphore);
+    } else {
+        printf("high priority task can't grab sem");
+    }
+
+    while (1) {
+        vTaskDelay(500);
+    }
+
 }
 
 void supervisor_task(__unused void *params) {
@@ -60,7 +72,7 @@ void supervisor_task(__unused void *params) {
               HIGH_PRIORITY_TASK_PRIORITY, NULL);
 
   while (true) {
-    taskYIELD();
+    vTaskDelay(portMAX_DELAY);
   }
 }
 
