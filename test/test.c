@@ -33,7 +33,7 @@ void tearDown(void)
 // mid has no interest in the semaphore.
 void test_inversion_binary(void)
 {
-    xSemaphoreCreateBinary();
+    semaphore = xSemaphoreCreateBinary();
 
     xSemaphoreGive(semaphore); // Make it available for low priority task.
 }
